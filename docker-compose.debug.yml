@@ -1,0 +1,18 @@
+# Debug override: exposes a debugpy port so VS Code can attach to the
+# backend running inside its container.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build
+# Then in VS Code: Run and Debug > "Docker: Attach to Backend" (see .vscode/launch.json)
+#
+# The backend will wait for the debugger to attach before starting Uvicorn
+# (--wait-for-client), so open the debugger promptly after containers start.
+
+services:
+  backend:
+    ports:
+      - "8000:8000"
+      - "5678:5678" # debugpy
+    command: >
+      python -m debugpy --listen 0.0.0.0:5678 --wait-for-client
+      -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload

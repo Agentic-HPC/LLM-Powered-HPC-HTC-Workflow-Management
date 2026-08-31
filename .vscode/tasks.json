@@ -1,0 +1,79 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Docker: Up (build)",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated", "reveal": "always" },
+      "group": { "kind": "build", "isDefault": true }
+    },
+    {
+      "label": "Docker: Up (background)",
+      "type": "shell",
+      "command": "docker compose up -d --build",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Down",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Down (wipe DB volume)",
+      "type": "shell",
+      "command": "docker compose down -v",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Logs (backend)",
+      "type": "shell",
+      "command": "docker compose logs -f backend",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Logs (frontend)",
+      "type": "shell",
+      "command": "docker compose logs -f frontend",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Generate sample datasets",
+      "type": "shell",
+      "command": "docker compose exec backend python scripts/generate_datasets.py",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Rescan datasets",
+      "type": "shell",
+      "command": "docker compose exec backend python -c \"from app.core.database import SessionLocal; from app.services.dataset_service import scan_and_register_datasets; db=SessionLocal(); scan_and_register_datasets(db); print('registered')\"",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" },
+      "dependsOn": ["Docker: Generate sample datasets"]
+    },
+    {
+      "label": "Docker: Run backend tests",
+      "type": "shell",
+      "command": "docker compose exec backend pytest tests/ -v",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    },
+    {
+      "label": "Docker: Backend shell",
+      "type": "shell",
+      "command": "docker compose exec backend bash",
+      "problemMatcher": [],
+      "presentation": { "panel": "dedicated" }
+    }
+  ]
+}

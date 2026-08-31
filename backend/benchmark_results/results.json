@@ -1,0 +1,159 @@
+{
+  "generated_at": "2026-09-13T17:02:50.925145+00:00",
+  "source_dataset": "/home/claude/work/hpc/backend/scripts/../data/employees_large.csv",
+  "cpu_count": 1,
+  "spark_version": "3.5.1",
+  "spark_master": "local[*]",
+  "partitions_used": 4,
+  "repeats_per_measurement": 2,
+  "results": [
+    {
+      "rows": 5000,
+      "cpu_count": 1,
+      "pandas_seconds": 0.0011,
+      "pandas_seconds_all_runs": [
+        0.0016,
+        0.0006
+      ],
+      "pandas_result": {
+        "Bachelors": 29.437,
+        "Masters": 29.289,
+        "PHD": 29.253
+      },
+      "mapreduce_seconds": 0.0207,
+      "mapreduce_seconds_all_runs": [
+        0.0232,
+        0.0183
+      ],
+      "mapreduce_result": {
+        "Bachelors": 29.437,
+        "Masters": 29.289,
+        "PHD": 29.253
+      },
+      "spark_seconds": 3.9093,
+      "spark_seconds_all_runs": [
+        6.8457,
+        0.973
+      ],
+      "spark_result": {
+        "Masters": 29.289,
+        "Bachelors": 29.437,
+        "PHD": 29.253
+      },
+      "correctness_ok": true,
+      "speedup_mapreduce_vs_pandas": 0.053,
+      "speedup_spark_vs_pandas": 0.0
+    },
+    {
+      "rows": 20000,
+      "cpu_count": 1,
+      "pandas_seconds": 0.0015,
+      "pandas_seconds_all_runs": [
+        0.0018,
+        0.0012
+      ],
+      "pandas_result": {
+        "Bachelors": 29.465,
+        "Masters": 29.249,
+        "PHD": 29.315
+      },
+      "mapreduce_seconds": 0.0704,
+      "mapreduce_seconds_all_runs": [
+        0.0914,
+        0.0495
+      ],
+      "mapreduce_result": {
+        "Bachelors": 29.465,
+        "Masters": 29.249,
+        "PHD": 29.315
+      },
+      "spark_seconds": 1.6267,
+      "spark_seconds_all_runs": [
+        1.6953,
+        1.5582
+      ],
+      "spark_result": {
+        "Masters": 29.249,
+        "Bachelors": 29.465,
+        "PHD": 29.315
+      },
+      "correctness_ok": true,
+      "speedup_mapreduce_vs_pandas": 0.021,
+      "speedup_spark_vs_pandas": 0.001
+    },
+    {
+      "rows": 100000,
+      "cpu_count": 1,
+      "pandas_seconds": 0.0089,
+      "pandas_seconds_all_runs": [
+        0.0091,
+        0.0086
+      ],
+      "pandas_result": {
+        "Bachelors": 29.429,
+        "Masters": 29.261,
+        "PHD": 29.313
+      },
+      "mapreduce_seconds": 0.0862,
+      "mapreduce_seconds_all_runs": [
+        0.1094,
+        0.0631
+      ],
+      "mapreduce_result": {
+        "Bachelors": 29.429,
+        "Masters": 29.261,
+        "PHD": 29.313
+      },
+      "spark_seconds": 4.1927,
+      "spark_seconds_all_runs": [
+        4.0538,
+        4.3316
+      ],
+      "spark_result": {
+        "Masters": 29.261,
+        "Bachelors": 29.429,
+        "PHD": 29.313
+      },
+      "correctness_ok": true,
+      "speedup_mapreduce_vs_pandas": 0.103,
+      "speedup_spark_vs_pandas": 0.002
+    },
+    {
+      "rows": 500000,
+      "cpu_count": 1,
+      "pandas_seconds": 0.0212,
+      "pandas_seconds_all_runs": [
+        0.0222,
+        0.0202
+      ],
+      "pandas_result": {
+        "Bachelors": 29.41,
+        "Masters": 29.278,
+        "PHD": 29.283
+      },
+      "mapreduce_seconds": 0.313,
+      "mapreduce_seconds_all_runs": [
+        0.3842,
+        0.2417
+      ],
+      "mapreduce_result": {
+        "Bachelors": 29.41,
+        "Masters": 29.278,
+        "PHD": 29.283
+      },
+      "spark_seconds": 17.8655,
+      "spark_seconds_all_runs": [
+        17.9514,
+        17.7797
+      ],
+      "spark_result": {
+        "Masters": 29.278,
+        "Bachelors": 29.41,
+        "PHD": 29.283
+      },
+      "correctness_ok": true,
+      "speedup_mapreduce_vs_pandas": 0.068,
+      "speedup_spark_vs_pandas": 0.001
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.db
+.env
+
+# Node
+node_modules/
+.next/
+out/
+
+# Data
+backend/data/*_large.csv
+
+# Benchmark artifacts (results.json is committed intentionally as evidence;
+# re-runs regenerate it, so ignore local scratch runs if you rename it)
+backend/benchmark_results/*.db
+backend/*.db
+
+# Misc
+.DS_Store
