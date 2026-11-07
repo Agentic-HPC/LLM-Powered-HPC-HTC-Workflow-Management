@@ -26,6 +26,13 @@ app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 @app.on_event("startup")
 def on_startup():
     init_db()
+    from app.core.database import SessionLocal
+    from app.services.workflow_service import recover_orphaned_jobs
+    db = SessionLocal()
+    try:
+        recover_orphaned_jobs(db)
+    finally:
+        db.close()
 
 
 @app.get("/")

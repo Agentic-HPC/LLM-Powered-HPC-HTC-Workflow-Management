@@ -29,3 +29,26 @@ def init_db():
     """Create all tables. Used for local/dev bootstrapping and tests."""
     import app.models  # noqa: F401 ensures all models are registered on Base
     Base.metadata.create_all(bind=engine)
+    ensure_schema_migrations()
+
+
+def ensure_schema_migrations():
+    """Ensure database schema is compatible with latest model changes (e.g. prompt on jobs)."""
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        try:
+            # Check if 'prompt' column exists in 'jobs' table
+            if settings.DATABASE_URL.startswith("sqlite"):
+                cols = [row[1] for row in conn.execute(text("PRAGMA table_info(jobs)")).fetchall()]
+                if cols and "prompt" not in cols:
+                    conn.execute(text("ALTER TABLE jobs ADD COLUMN prompt TEXT"))
+                    conn.commit()
+            elif settings.DATABASE_URL.startswith("postgres"):
+                res = conn.execute(text(
+                    "SELECT column_name FROM information_schema.columns WHERE table_name='jobs' AND column_name='prompt'"
+                )).fetchone()
+                if not res:
+                    conn.execute(text("ALTER TABLE jobs ADD COLUMN prompt TEXT"))
+                    conn.commit()
+        except Exception:
+            pass  # Table might not exist yet or migration already applied

@@ -95,3 +95,29 @@ def dispatch_job(background_tasks, job: Job, workflow: Workflow = None, prompt: 
     else:
         logger.info(f"dispatching job {job.id} via in-process BackgroundTasks (Celery/Redis unavailable)")
         background_tasks.add_task(_run_job_sync, job.id, prompt, definition)
+
+
+def recover_orphaned_jobs(db: Session) -> int:
+    """On server startup, detect jobs that were left RUNNING or PENDING when the server
+    shut down or restarted, mark them as FAILED, and release their compute nodes."""
+    from datetime import datetime
+    from app.models.cluster_node import ClusterNode
+    from app.models.job import Job, JobStatus
+    from app.services import cluster_service
+
+    orphaned = db.query(Job).filter(Job.status.in_([JobStatus.RUNNING, JobStatus.PENDING])).all()
+    count = 0
+    for job in orphaned:
+        count += 1
+        job.status = JobStatus.FAILED
+        job.error_message = "Server restarted while job was running. Click Restart to retry."
+        job.finished_at = datetime.utcnow()
+        if job.node_id:
+            node = db.query(ClusterNode).filter(ClusterNode.id == job.node_id).first()
+            if node:
+                cluster_service.mark_node_idle(db, node)
+            job.node_id = None
+    if count > 0:
+        db.commit()
+        logger.info(f"Recovered {count} orphaned job(s) from previous server run.")
+    return count

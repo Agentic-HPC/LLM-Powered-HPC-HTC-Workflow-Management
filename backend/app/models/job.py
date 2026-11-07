@@ -37,6 +37,7 @@ class Job(Base):
 
     status = Column(Enum(JobStatus), default=JobStatus.PENDING, nullable=False)
     progress = Column(Integer, default=0)  # 0-100
+    prompt = Column(Text, nullable=True)
     error_message = Column(Text, nullable=True)
 
     architecture = Column(Enum(JobArchitecture), default=JobArchitecture.MULTI_AGENT, nullable=False)

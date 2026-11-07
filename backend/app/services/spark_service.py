@@ -36,6 +36,8 @@ def get_spark_session() -> SparkSession:
                 SparkSession.builder.appName("hpc-htc-ai-platform")
                 .master(settings.SPARK_MASTER_URL)
                 .config("spark.driver.memory", settings.SPARK_DRIVER_MEMORY)
+                .config("spark.driver.bindAddress", "127.0.0.1")
+                .config("spark.driver.host", "127.0.0.1")
                 .config("spark.sql.shuffle.partitions", str(settings.SPARK_SHUFFLE_PARTITIONS))
                 .config("spark.ui.showConsoleProgress", "false")
             )

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { AppLayout } from "@/components/AppLayout";
 import { jobsApi, JobDetail } from "@/lib/api";
@@ -13,23 +13,39 @@ export default function JobDetailPage() {
   const params = useParams();
   const jobId = Number(params.id);
   const [job, setJob] = useState<JobDetail | null>(null);
+  const [restarting, setRestarting] = useState(false);
+
+  const loadJob = useCallback(() => {
+    if (!jobId) return;
+    jobsApi.get(jobId).then((r) => setJob(r.data));
+  }, [jobId]);
 
   useEffect(() => {
-    function load() {
-      jobsApi.get(jobId).then((r) => setJob(r.data));
-    }
-    load();
+    loadJob();
     const interval = setInterval(() => {
       setJob((prev) => {
         if (prev && ["succeeded", "failed", "cancelled"].includes(prev.status)) {
           return prev;
         }
-        load();
+        loadJob();
         return prev;
       });
     }, 2000);
     return () => clearInterval(interval);
-  }, [jobId]);
+  }, [loadJob]);
+
+  const handleRestart = async () => {
+    if (!job) return;
+    try {
+      setRestarting(true);
+      await jobsApi.restart(job.id);
+      loadJob();
+    } catch (err: any) {
+      alert("Failed to restart job: " + (err.response?.data?.detail || err.message));
+    } finally {
+      setRestarting(false);
+    }
+  };
 
   if (!job) {
     return (
@@ -45,8 +61,24 @@ export default function JobDetailPage() {
   return (
     <AppLayout>
       <div className="flex items-center justify-between mb-1">
-        <h1 className="text-2xl font-semibold">Job #{job.id}</h1>
-        <StatusBadge status={job.status} />
+        <div>
+          <h1 className="text-2xl font-semibold">Job #{job.id}</h1>
+          {job.prompt && (
+            <p className="text-sm text-gray-500 mt-0.5 italic">
+              &ldquo;{job.prompt}&rdquo;
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <StatusBadge status={job.status} />
+          <button
+            onClick={handleRestart}
+            disabled={restarting}
+            className="text-xs px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium transition-colors disabled:opacity-50 shadow-sm"
+          >
+            {restarting ? "Restarting..." : "Restart Job"}
+          </button>
+        </div>
       </div>
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <Tag>{job.architecture === "single_agent" ? "Single-agent" : "Multi-agent"}</Tag>

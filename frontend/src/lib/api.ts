@@ -41,6 +41,7 @@ export interface Job {
   id: number;
   status: "pending" | "running" | "succeeded" | "failed" | "cancelled";
   progress: number;
+  prompt?: string;
   error_message?: string;
   architecture: "multi_agent" | "single_agent";
   processing_paradigm: "pandas" | "mapreduce" | "spark";
@@ -122,6 +123,7 @@ export const jobsApi = {
     processing_paradigm?: "pandas" | "mapreduce" | "spark";
   }) => api.post<Job>("/jobs", data),
   get: (id: number) => api.get<JobDetail>(`/jobs/${id}`),
+  restart: (id: number) => api.post<Job>(`/jobs/${id}/restart`),
 };
 
 // ---------- Cluster ----------

@@ -44,6 +44,7 @@ class JobOut(BaseModel):
     id: int
     status: JobStatus
     progress: int
+    prompt: Optional[str] = None
     error_message: Optional[str] = None
     architecture: JobArchitecture
     processing_paradigm: ProcessingParadigm
