@@ -16,7 +16,10 @@ import atexit
 import threading
 from typing import Optional
 
-from pyspark.sql import SparkSession
+try:
+    from pyspark.sql import SparkSession
+except ImportError:
+    SparkSession = None
 
 from app.core.config import settings
 
@@ -27,6 +30,9 @@ _lock = threading.Lock()
 def get_spark_session() -> SparkSession:
     """Lazily create (once) and return the shared SparkSession."""
     global _spark_session
+    if SparkSession is None:
+        raise RuntimeError("pyspark is not installed. Please install requirements.txt to run Spark jobs.")
+
     if _spark_session is not None:
         return _spark_session
 

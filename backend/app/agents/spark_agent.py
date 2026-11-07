@@ -18,7 +18,10 @@ import time
 from typing import Any, Dict
 
 import pandas as pd
-from pyspark.sql import functions as F
+try:
+    from pyspark.sql import functions as F
+except ImportError:
+    F = None
 
 from app.agents.base_agent import BaseAgent
 from app.services.spark_service import get_spark_session
@@ -28,6 +31,9 @@ class SparkAgent(BaseAgent):
     name = "spark_agent"
 
     async def run(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        if F is None:
+            raise RuntimeError("pyspark is not installed in the current environment. Please install requirements.txt.")
+
         step = context["current_step"]
         action = step["action"]
         params = step["params"]

@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
+
+try:
+    from slowapi import _rate_limit_exceeded_handler
+    from slowapi.errors import RateLimitExceeded
+except ImportError:
+    RateLimitExceeded = None
+    _rate_limit_exceeded_handler = None
 
 from app.api.v1.router import api_router
 from app.core.config import settings
@@ -9,8 +14,10 @@ from app.core.database import init_db
 from app.core.rate_limit import limiter
 
 app = FastAPI(title=settings.APP_NAME)
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+if hasattr(app.state, "limiter"):
+    app.state.limiter = limiter
+if _rate_limit_exceeded_handler and RateLimitExceeded:
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,

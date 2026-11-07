@@ -17,28 +17,38 @@ uses:
   - "background_tasks" (fallback used automatically by tests / when Redis
     isn't available, so the app still runs without extra infrastructure)
 """
-from celery import Celery
+try:
+    from celery import Celery
 
-from app.core.config import settings
+    from app.core.config import settings
 
-celery_app = Celery(
-    "hpc_htc_ai_platform",
-    broker=settings.REDIS_URL,
-    backend=settings.REDIS_URL,
-    # Explicit include (rather than autodiscover_tasks, which only scans
-    # for tasks.py submodules) so the @celery_app.task defined directly in
-    # workflow_service.py actually registers with the worker.
-    include=["app.services.workflow_service"],
-)
+    celery_app = Celery(
+        "hpc_htc_ai_platform",
+        broker=settings.REDIS_URL,
+        backend=settings.REDIS_URL,
+        include=["app.services.workflow_service"],
+    )
 
-celery_app.conf.update(
-    task_serializer="json",
-    accept_content=["json"],
-    result_serializer="json",
-    timezone="UTC",
-    enable_utc=True,
-    task_track_started=True,
-    worker_prefetch_multiplier=1,
-)
+    celery_app.conf.update(
+        task_serializer="json",
+        accept_content=["json"],
+        result_serializer="json",
+        timezone="UTC",
+        enable_utc=True,
+        task_track_started=True,
+        worker_prefetch_multiplier=1,
+    )
 
-celery_app.autodiscover_tasks(["app.services"])
+    celery_app.autodiscover_tasks(["app.services"])
+except ImportError:
+    class DummyCelery:
+        def task(self, *args, **kwargs):
+            def decorator(f):
+                f.delay = lambda *a, **k: None
+                return f
+            return decorator
+
+        def autodiscover_tasks(self, *a, **k):
+            pass
+
+    celery_app = DummyCelery()
